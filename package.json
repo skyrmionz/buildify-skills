@@ -1,0 +1,23 @@
+{
+  "name": "buildify-skills",
+  "version": "1.0.0",
+  "description": "Buildify MCP server — connect AI agents to your Buildify demo planning workspace",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "playwright": "^1.58.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
