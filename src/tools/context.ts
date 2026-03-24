@@ -5,7 +5,7 @@ export const contextTools = [
   {
     name: "get_current_demo",
     description:
-      "Get the full current demo state including all tabs (notes, storyboard, script, org config). This always reads fresh from the database, so you get the latest data including any user edits.",
+      "Get the full current demo state including all tabs (notes, storyboard, script, org config, video, org details). This always reads fresh from the database, so you get the latest data including any user edits.",
     inputSchema: { type: "object" as const, properties: {} },
   },
   {
@@ -17,11 +17,22 @@ export const contextTools = [
       properties: {
         tab: {
           type: "string",
-          enum: ["notes", "storyboard", "script", "org-config"],
+          enum: ["notes", "storyboard", "script", "org-config", "video"],
           description: "Which tab to read",
         },
       },
       required: ["tab"],
+    },
+  },
+  {
+    name: "update_demo_title",
+    description: "Update the demo project's title",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        title: { type: "string", description: "New title for the demo" },
+      },
+      required: ["title"],
     },
   },
   {
@@ -65,20 +76,29 @@ export async function handleContext(
         const items = await apiCall(`/api/demos/${context.demoId}/org-config`);
         return JSON.stringify(items, null, 2);
       }
+      case "video": {
+        const config = await apiCall(`/api/demos/${context.demoId}/video`);
+        return JSON.stringify(config, null, 2);
+      }
       default:
         throw new Error(`Unknown tab: ${tab}`);
     }
   }
 
+  if (name === "update_demo_title") {
+    await apiCall(`/api/demos/${context.demoId}`, {
+      method: "PATCH",
+      body: { title: args.title },
+    });
+    return `Demo title updated to: ${args.title}`;
+  }
+
   if (name === "flush_and_read") {
-    // Emit a flush event so the client saves any pending edits
     await apiCall("/api/agent/navigate", {
       method: "POST",
       body: { demoId: context.demoId, tab: "__flush__" },
     });
-    // Brief wait for the client to process the save
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    // Now read fresh
     const demo = await apiCall(`/api/demos/${context.demoId}`);
     return JSON.stringify(demo, null, 2);
   }

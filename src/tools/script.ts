@@ -37,6 +37,40 @@ export const scriptTools = [
       required: ["rowId", "cells"],
     },
   },
+  {
+    name: "delete_script_row",
+    description: "Delete a script row by ID",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        rowId: { type: "string", description: "The row ID to delete" },
+      },
+      required: ["rowId"],
+    },
+  },
+  {
+    name: "add_script_column",
+    description: "Add a new column to the script table",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: { type: "string", description: "Column name" },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "delete_script_column",
+    description:
+      "Delete a script column by ID. All cell data in that column will be lost.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        columnId: { type: "string", description: "The column ID to delete" },
+      },
+      required: ["columnId"],
+    },
+  },
 ];
 
 export async function handleScript(
@@ -70,6 +104,30 @@ export async function handleScript(
       }
     );
     return "Row updated";
+  }
+
+  if (name === "delete_script_row") {
+    await apiCall(
+      `/api/demos/${context.demoId}/script/rows/${args.rowId}`,
+      { method: "DELETE" }
+    );
+    return `Row deleted (id: ${args.rowId})`;
+  }
+
+  if (name === "add_script_column") {
+    const col = await apiCall(
+      `/api/demos/${context.demoId}/script/columns`,
+      { method: "POST", body: { name: args.name } }
+    );
+    return `Column added: ${col.name} (id: ${col.id})`;
+  }
+
+  if (name === "delete_script_column") {
+    await apiCall(
+      `/api/demos/${context.demoId}/script/columns/${args.columnId}`,
+      { method: "DELETE" }
+    );
+    return `Column deleted (id: ${args.columnId})`;
   }
 
   throw new Error(`Unknown script tool: ${name}`);

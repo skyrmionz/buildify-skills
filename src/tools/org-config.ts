@@ -15,11 +15,12 @@ export const orgConfigTools = [
       properties: {
         type: {
           type: "string",
-          enum: ["todo", "requirement", "doc", "data"],
-          description: "Item type",
+          enum: ["todo", "doc", "data"],
+          description: "Item type: todo (checklist), doc (documentation link), data (build log)",
         },
         title: { type: "string", description: "Item title" },
-        content: { type: "string", description: "Optional item content/details" },
+        content: { type: "string", description: "Optional item content/details or URL for docs" },
+        category: { type: "string", description: "Category for to-do items (default: General)" },
       },
       required: ["type", "title"],
     },
@@ -38,8 +39,40 @@ export const orgConfigTools = [
           enum: ["pending", "done", "in-progress"],
           description: "New status",
         },
+        category: { type: "string", description: "New category" },
       },
       required: ["itemId"],
+    },
+  },
+  {
+    name: "delete_org_config_item",
+    description: "Delete an org config item by ID",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        itemId: { type: "string", description: "The item ID to delete" },
+      },
+      required: ["itemId"],
+    },
+  },
+  {
+    name: "get_org_details",
+    description:
+      "Get the org details (username, password, org ID, org alias) for the current demo",
+    inputSchema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "update_org_details",
+    description:
+      "Update org details (username, password, orgId, orgAlias) for the current demo",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        username: { type: "string", description: "Org username" },
+        password: { type: "string", description: "Org password" },
+        orgId: { type: "string", description: "Salesforce Org ID" },
+        orgAlias: { type: "string", description: "Org alias" },
+      },
     },
   },
   {
@@ -84,6 +117,7 @@ export async function handleOrgConfig(
           type: args.type,
           title: args.title,
           content: args.content,
+          category: args.category,
         },
       }
     );
@@ -97,6 +131,38 @@ export async function handleOrgConfig(
       { method: "PATCH", body: rest }
     );
     return "Item updated";
+  }
+
+  if (name === "delete_org_config_item") {
+    await apiCall(
+      `/api/demos/${context.demoId}/org-config/${args.itemId}`,
+      { method: "DELETE" }
+    );
+    return `Item deleted (id: ${args.itemId})`;
+  }
+
+  if (name === "get_org_details") {
+    const demo = await apiCall(`/api/demos/${context.demoId}`);
+    const details = demo.orgDetails || {};
+    return JSON.stringify(details, null, 2);
+  }
+
+  if (name === "update_org_details") {
+    const { username, password, orgId, orgAlias } = args as Record<
+      string,
+      string
+    >;
+    const orgDetails: Record<string, string> = {};
+    if (username !== undefined) orgDetails.username = username;
+    if (password !== undefined) orgDetails.password = password;
+    if (orgId !== undefined) orgDetails.orgId = orgId;
+    if (orgAlias !== undefined) orgDetails.orgAlias = orgAlias;
+
+    await apiCall(`/api/demos/${context.demoId}`, {
+      method: "PATCH",
+      body: { orgDetails },
+    });
+    return "Org details updated";
   }
 
   if (name === "record_agentforce_build") {

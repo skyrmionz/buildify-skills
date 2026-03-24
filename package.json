@@ -1,14 +1,36 @@
 {
   "name": "buildify-skills",
-  "version": "1.0.0",
-  "description": "Buildify MCP server — connect AI agents to your Buildify demo planning workspace",
+  "version": "1.1.0",
+  "description": "Buildify MCP server — connect any AI agent to your Buildify demo planning workspace",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "buildify-skills": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
   },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "buildify",
+    "ai-agent",
+    "demo-planning",
+    "claude",
+    "cursor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skyrmionz/buildify-skills.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "playwright": "^1.58.2"

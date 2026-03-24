@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -10,12 +11,13 @@ import { notesTools, handleNotes } from "./tools/notes.js";
 import { storyboardTools, handleStoryboard } from "./tools/storyboard.js";
 import { scriptTools, handleScript } from "./tools/script.js";
 import { orgConfigTools, handleOrgConfig } from "./tools/org-config.js";
+import { videoTools, handleVideo } from "./tools/video.js";
 import { contextTools, handleContext } from "./tools/context.js";
 import { salesforceTools, handleSalesforce } from "./tools/salesforce.js";
 import { browserTools, handleBrowser } from "./tools/browser.js";
 
 const server = new Server(
-  { name: "buildify-mcp", version: "1.0.0" },
+  { name: "buildify-mcp", version: "1.1.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -25,6 +27,7 @@ const allTools = [
   ...storyboardTools,
   ...scriptTools,
   ...orgConfigTools,
+  ...videoTools,
   ...contextTools,
   ...salesforceTools,
   ...browserTools,
@@ -40,7 +43,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     let result: string;
 
-    // Route to appropriate handler
     if (navigationTools.some((t) => t.name === name)) {
       result = await handleNavigation(name, args as Record<string, unknown>);
     } else if (notesTools.some((t) => t.name === name)) {
@@ -51,6 +53,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       result = await handleScript(name, args as Record<string, unknown>);
     } else if (orgConfigTools.some((t) => t.name === name)) {
       result = await handleOrgConfig(name, args as Record<string, unknown>);
+    } else if (videoTools.some((t) => t.name === name)) {
+      result = await handleVideo(name, args as Record<string, unknown>);
     } else if (contextTools.some((t) => t.name === name)) {
       result = await handleContext(name, args as Record<string, unknown>);
     } else if (salesforceTools.some((t) => t.name === name)) {

@@ -1,137 +1,142 @@
-# Buildify Skills
+# Buildify MCP Server
 
-MCP (Model Context Protocol) server that connects AI agents to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo planning workspace. Use it with Claude Desktop, Cursor, Claude Code, or any MCP-compatible tool.
+Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. Your agent gets 41 tools to read, write, and navigate every tab — changes show up live on your screen.
 
-Your AI agent gets 32 tools to read and write across all demo tabs, navigate the UI, run Salesforce CLI commands, and automate browser interactions — all reflected live on your screen.
+Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Codex**, **Cline**, and any MCP-compatible tool.
 
-## Quick Start
+## Setup (2 minutes)
+
+### 1. Get your token
+
+Sign in to [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com), open the agent CLI drawer at the bottom, type `sync agent`, pick a project, and copy the token + config it gives you.
+
+### 2. Install & configure your agent
+
+#### Claude Code (Terminal)
 
 ```bash
-git clone https://github.com/rdinh/buildify-skills.git
-cd buildify-skills
-npm install
-npm run build
+git clone https://github.com/skyrmionz/buildify-skills.git
+cd buildify-skills && npm install && npm run build
+
+claude mcp add buildify \
+  -e DEMO_TOOL_TOKEN=<your-token> \
+  -e APP_URL=https://demo-building-app-f0300aa3e343.herokuapp.com \
+  -- node $(pwd)/dist/index.js
 ```
 
-Then configure your AI tool (see below).
+Verify: `claude mcp list` should show `buildify: ✓ Connected`.
+
+#### Claude Desktop
+
+Clone and build (same as above), then add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "buildify": {
+      "command": "node",
+      "args": ["/path/to/buildify-skills/dist/index.js"],
+      "env": {
+        "DEMO_TOOL_TOKEN": "<your-token>",
+        "APP_URL": "https://demo-building-app-f0300aa3e343.herokuapp.com"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. Look for the hammer icon.
+
+#### Cursor
+
+Clone and build, then add to `.cursor/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "buildify": {
+      "command": "node",
+      "args": ["/path/to/buildify-skills/dist/index.js"],
+      "env": {
+        "DEMO_TOOL_TOKEN": "<your-token>",
+        "APP_URL": "https://demo-building-app-f0300aa3e343.herokuapp.com"
+      }
+    }
+  }
+}
+```
+
+#### Any other MCP-compatible agent
+
+The server uses **stdio transport**. Point your agent at `node /path/to/buildify-skills/dist/index.js` with the two env vars below.
+
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DEMO_TOOL_TOKEN` | Yes | Agent token generated from the Buildify CLI drawer |
+| `APP_URL` | Yes | `https://demo-building-app-f0300aa3e343.herokuapp.com` |
+
+Tokens expire after **24 hours**. Generate a new one from the CLI drawer when needed.
+
+## What your agent can do
+
+### Navigate the UI
+- `navigate_to_tab` — Switch the user's screen to any tab
+
+### Notes
+- `read_demo_notes` — Read notes (Tiptap JSON)
+- `write_demo_notes` — Write/replace notes
+
+### Storyboard
+- `get_storyboard` — Get all beats
+- `add_storyboard_beat` — Add a beat
+- `update_storyboard_beat` — Edit a beat's title, description, or image
+- `delete_storyboard_beat` — Remove a beat
+- `reorder_storyboard` — Reorder beats
+
+### Script
+- `get_script` — Get columns and rows
+- `add_script_row` / `update_script_row` / `delete_script_row` — Manage rows
+- `add_script_column` / `delete_script_column` — Manage columns
+
+### Org Config
+- `get_org_config` — Get all config items
+- `add_org_config_item` / `update_org_config_item` / `delete_org_config_item` — Manage to-dos, docs, build data
+- `get_org_details` / `update_org_details` — Read/write org credentials (username, password, org ID, alias)
+- `record_agentforce_build` — Log an Agentforce build
+
+### Video
+- `get_video_config` — Read voice recordings, screen captures, video status
+- `update_video_config` — Update video configuration
+
+### Context
+- `get_current_demo` — Full demo state (all tabs) fresh from DB
+- `get_tab_content` — Read one tab (lighter)
+- `update_demo_title` — Rename the demo project
+- `flush_and_read` — Force-save user's pending edits, then return the freshest state
+
+### Salesforce CLI
+- `sf_get_org_info` / `sf_query` / `sf_run_apex` / `sf_deploy` / `sf_retrieve` / `sf_list_orgs` / `sf_describe_object`
+
+### Browser Automation (Playwright)
+- `browser_open` / `browser_click` / `browser_fill` / `browser_select` / `browser_screenshot` / `browser_get_text` / `browser_wait` / `browser_execute` / `browser_close`
+
+## Try it
+
+Once connected, ask your agent:
+
+> "Read my demo and summarize what I have so far."
+
+> "Turn my notes into a 5-beat storyboard."
+
+> "Add a to-do item: Set up login flow automation."
 
 ## Prerequisites
 
 - **Node.js 20+**
-- A **Buildify account** with an agent token (generate at `/agent-setup` in the app)
-- **Salesforce CLI** (`npm install -g @salesforce/cli`) — for org operations
-- **Python 3.8+** — for ADLC skills (optional)
-
-## Configuration
-
-### Claude Desktop
-
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "buildify": {
-      "command": "node",
-      "args": ["/path/to/buildify-skills/dist/index.js"],
-      "env": {
-        "DEMO_TOOL_TOKEN": "<your-agent-token>",
-        "APP_URL": "https://demo-building-app-f0300aa3e343.herokuapp.com"
-      }
-    }
-  }
-}
-```
-
-### Cursor
-
-Add to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "buildify": {
-      "command": "node",
-      "args": ["/path/to/buildify-skills/dist/index.js"],
-      "env": {
-        "DEMO_TOOL_TOKEN": "<your-agent-token>",
-        "APP_URL": "https://demo-building-app-f0300aa3e343.herokuapp.com"
-      }
-    }
-  }
-}
-```
-
-### Claude Code
-
-```bash
-claude mcp add buildify -- node /path/to/buildify-skills/dist/index.js
-```
-
-Set environment variables `DEMO_TOOL_TOKEN` and `APP_URL` before running.
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `DEMO_TOOL_TOKEN` | Agent token from Buildify's Agent Setup page (required) |
-| `APP_URL` | Your Buildify app URL (default: `http://localhost:3000`) |
-
-## Tool Reference
-
-### Navigation
-- `navigate_to_tab(tab)` — Navigate the user's screen to: `notes` | `storyboard` | `script` | `org-config` | `video`
-
-### Demo Notes
-- `read_demo_notes()` — Returns current notes as Tiptap JSON
-- `write_demo_notes(content)` — Overwrites notes with new Tiptap JSON content
-
-### Storyboard
-- `get_storyboard()` — Returns all beats with title, description, imageUrl, order
-- `add_storyboard_beat(title, description?, imageUrl?)` — Adds a new beat
-- `reorder_storyboard(beatIds[])` — Reorders beats by ID array
-
-### Script
-- `get_script()` — Returns columns and all rows
-- `add_script_row(cells)` — Add a row; cells is `{ columnId: value }`
-- `update_script_row(rowId, cells)` — Partial update a row's cells
-
-### Org Configuration
-- `get_org_config()` — Returns all items
-- `add_org_config_item(type, title, content?)` — type: `todo` | `requirement` | `doc` | `data`
-- `update_org_config_item(itemId, { title?, content?, status? })` — Update an item
-- `record_agentforce_build(agentName, agentFilePath?, status)` — Record an Agentforce build result
-
-### Context & Freshness
-- `get_current_demo()` — Returns full demo state including all tabs
-- `get_tab_content(tab)` — Read just one tab's content
-- `flush_and_read()` — Forces the user's browser to save pending edits, then returns fresh state
-
-### Salesforce CLI
-- `sf_get_org_info(alias?)` — Get org details
-- `sf_query(soql, alias?)` — Run SOQL query
-- `sf_run_apex(code, alias?)` — Execute anonymous Apex
-- `sf_deploy(sourcePath, alias?)` — Deploy source metadata
-- `sf_retrieve(metadata, alias?)` — Retrieve metadata
-- `sf_list_orgs()` — List all authenticated orgs
-- `sf_describe_object(sobject, alias?)` — Describe SObject fields
-
-### Browser Automation (Playwright)
-- `browser_open(url)` — Open a URL in a visible browser
-- `browser_click(selector)` — Click an element
-- `browser_fill(selector, value)` — Fill a text field
-- `browser_select(selector, value)` — Select from a dropdown
-- `browser_screenshot()` — Take a screenshot
-- `browser_get_text(selector?)` — Get text content
-- `browser_wait(selector, timeout?)` — Wait for an element
-- `browser_execute(script)` — Run JavaScript in the page
-- `browser_close()` — Close the browser
-
-## Additional Documentation
-
-- [SKILL.md](skills/SKILL.md) — Complete setup guide and workflow examples
-- [ADLC_SETUP.md](skills/ADLC_SETUP.md) — Agentforce ADLC integration
-- [SF_CLI_SETUP.md](skills/SF_CLI_SETUP.md) — Salesforce CLI authentication setup
+- **Salesforce CLI** (`npm install -g @salesforce/cli`) — only if using SF tools
+- **Playwright** is bundled — browser tools work out of the box
 
 ## License
 
