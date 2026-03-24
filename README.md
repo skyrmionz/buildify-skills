@@ -5,6 +5,7 @@ Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa
 - **54 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation
 - **8 ADLC skills** — full Agentforce agent development lifecycle
 - **33 Salesforce skills** — Apex, Flow, LWC, Data Cloud, testing, and more
+- **3 Data 360 scripts** — query Data Cloud with ANSI SQL via SF CLI
 
 Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Codex**, **Cline**, and any MCP-compatible tool.
 
@@ -26,6 +27,7 @@ This single command:
 - Builds the MCP server (`dist/index.js`)
 - Installs [Agentforce ADLC](https://github.com/almandsky/agentforce-adlc) skills (8 skills for authoring, deploying, testing, and optimizing Agentforce agents)
 - Installs [sf-skills](https://github.com/Jaganpro/sf-skills) (33 Salesforce development skills — Apex, Flow, LWC, Data Cloud, OmniStudio, testing, and more)
+- Installs Data 360 query scripts (3 shell scripts for querying Data Cloud with ANSI SQL)
 
 > ADLC requires Python 3.9+, sf-skills requires npx. If either is unavailable, setup still completes — only that piece is skipped.
 
@@ -161,6 +163,14 @@ Tokens expire after **24 hours**. Generate a new one from the CLI drawer when ne
 
 See [skills/SF_SKILLS.md](skills/SF_SKILLS.md) for the full reference.
 
+### Data 360 Query Scripts (installed by setup.sh)
+3 shell scripts for querying Salesforce Data Cloud (Data 360) using ANSI SQL:
+- `.skills/dc-list-objects.sh` — List all Data 360 objects (DLOs, DMOs, CIOs)
+- `.skills/dc-describe.sh <TableName>` — Get column names for a table
+- `.skills/dc-query.sh "<SQL>"` — Execute ANSI SQL against Data 360
+
+Requires SF CLI authenticated to a Data Cloud-enabled org and `jq`. See [skills/DATA_360.md](skills/DATA_360.md) for details.
+
 ## End-to-end workflow: Plan → Build → Deploy
 
 1. **Plan the demo** — Use Buildify to write notes, create a storyboard, build a script
@@ -195,6 +205,7 @@ Once connected, ask your agent:
 - [skills/SKILL.md](skills/SKILL.md) — Complete tool reference and workflow examples
 - [skills/ADLC_SETUP.md](skills/ADLC_SETUP.md) — Agentforce ADLC integration
 - [skills/SF_SKILLS.md](skills/SF_SKILLS.md) — Salesforce development skills reference
+- [skills/DATA_360.md](skills/DATA_360.md) — Data 360 / Data Cloud query scripts
 - [skills/SF_CLI_SETUP.md](skills/SF_CLI_SETUP.md) — Salesforce CLI authentication setup
 
 ## License

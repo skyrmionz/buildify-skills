@@ -14,7 +14,7 @@ echo -e "${BOLD}buildify${RESET} — agent setup"
 echo ""
 
 # --- Step 1: Build the MCP server ---
-echo -e "${CYAN}[1/3]${RESET} Building MCP server..."
+echo -e "${CYAN}[1/4]${RESET} Building MCP server..."
 
 if ! command -v node &>/dev/null; then
   echo -e "${RED}✗${RESET} Node.js not found. Install Node.js 20+ and try again."
@@ -32,7 +32,7 @@ npm run build --silent 2>/dev/null
 echo -e "${GREEN}✓${RESET} MCP server built  ${DIM}→ dist/index.js${RESET}"
 
 # --- Step 2: Install ADLC skills ---
-echo -e "${CYAN}[2/3]${RESET} Installing Agentforce ADLC skills..."
+echo -e "${CYAN}[2/4]${RESET} Installing Agentforce ADLC skills..."
 
 ADLC_OK=true
 
@@ -61,7 +61,7 @@ if [ "$ADLC_OK" = true ]; then
 fi
 
 # --- Step 3: Install Salesforce development skills ---
-echo -e "${CYAN}[3/3]${RESET} Installing Salesforce development skills..."
+echo -e "${CYAN}[3/4]${RESET} Installing Salesforce development skills..."
 
 if command -v npx &>/dev/null; then
   if npx -y skills add Jaganpro/sf-skills 2>/dev/null; then
@@ -73,6 +73,19 @@ if command -v npx &>/dev/null; then
 else
   echo -e "${YELLOW}⚠${RESET} npx not found — skipping sf-skills install."
   echo -e "  ${DIM}Install Node.js 20+ and run: npx skills add Jaganpro/sf-skills${RESET}"
+fi
+
+# --- Step 4: Install Data 360 query scripts ---
+SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo -e "${CYAN}[4/4]${RESET} Installing Data 360 query skills..."
+
+if [ -d "$SETUP_DIR/data-360" ]; then
+  mkdir -p .skills
+  cp "$SETUP_DIR/data-360/"*.sh .skills/ 2>/dev/null || true
+  chmod +x .skills/*.sh 2>/dev/null || true
+  echo -e "${GREEN}✓${RESET} Data 360 scripts installed  ${DIM}→ .skills/dc-query.sh, dc-describe.sh, dc-list-objects.sh${RESET}"
+else
+  echo -e "${YELLOW}⚠${RESET} data-360/ directory not found — skipping Data 360 scripts."
 fi
 
 # --- Done ---
