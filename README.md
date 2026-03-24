@@ -1,6 +1,6 @@
 # Buildify MCP Server
 
-Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. Your agent gets 41 tools to read, write, and navigate every tab — changes show up live on your screen.
+Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. Your agent gets 41 tools to read, write, and navigate every tab — plus Agentforce ADLC skills for the full agent development lifecycle.
 
 Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Codex**, **Cline**, and any MCP-compatible tool.
 
@@ -8,17 +8,28 @@ Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Code
 
 ### 1. Get your token
 
-Sign in to [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com), open the agent CLI drawer at the bottom, type `sync agent`, pick a project, and copy the token + config it gives you.
+Sign in to [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com), open the agent CLI drawer at the bottom, type `sync agent`, pick a project, and copy the token.
 
-### 2. Install & configure your agent
+### 2. Clone and run setup
+
+```bash
+git clone https://github.com/skyrmionz/buildify-skills.git
+cd buildify-skills
+./setup.sh
+```
+
+This single command:
+- Builds the MCP server (`dist/index.js`)
+- Installs [Agentforce ADLC](https://github.com/almandsky/agentforce-adlc) skills (8 skills for authoring, deploying, testing, and optimizing Agentforce agents)
+
+> ADLC requires Python 3.9+. If Python isn't available, setup still completes — only ADLC is skipped.
+
+### 3. Connect your agent
 
 #### Claude Code (Terminal)
 
 ```bash
-git clone https://github.com/skyrmionz/buildify-skills.git
-cd buildify-skills && npm install && npm run build
-
-claude mcp add buildify \
+claude mcp add buildify -s user \
   -e DEMO_TOOL_TOKEN=<your-token> \
   -e APP_URL=https://demo-building-app-f0300aa3e343.herokuapp.com \
   -- node $(pwd)/dist/index.js
@@ -28,7 +39,7 @@ Verify: `claude mcp list` should show `buildify: ✓ Connected`.
 
 #### Claude Desktop
 
-Clone and build (same as above), then add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -49,7 +60,7 @@ Restart Claude Desktop. Look for the hammer icon.
 
 #### Cursor
 
-Clone and build, then add to `.cursor/mcp.json` in your project root:
+Add to `.cursor/mcp.json` in your project root:
 
 ```json
 {
@@ -69,18 +80,6 @@ Clone and build, then add to `.cursor/mcp.json` in your project root:
 #### Any other MCP-compatible agent
 
 The server uses **stdio transport**. Point your agent at `node /path/to/buildify-skills/dist/index.js` with the two env vars below.
-
-### 3. Add ADLC skills (optional — for Agentforce development)
-
-If you're building Agentforce agents, install [agentforce-adlc](https://github.com/almandsky/agentforce-adlc) to give your agent the full Agent Development Life Cycle — author, discover, scaffold, deploy, test, and optimize `.agent` files directly from your coding agent.
-
-```bash
-curl -sSL https://raw.githubusercontent.com/almandsky/agentforce-adlc/main/tools/install.sh | bash
-```
-
-This installs 8 skills (`/adlc-author`, `/adlc-discover`, `/adlc-scaffold`, `/adlc-deploy`, `/adlc-run`, `/adlc-test`, `/adlc-optimize`, `/adlc-safety`) that work alongside the Buildify MCP tools. Use `record_agentforce_build` to log builds back to the app.
-
-**Requires**: Python 3.9+, Salesforce CLI (`sf`) authenticated to your org.
 
 ### Environment variables
 
@@ -134,8 +133,7 @@ Tokens expire after **24 hours**. Generate a new one from the CLI drawer when ne
 ### Browser Automation (Playwright)
 - `browser_open` / `browser_click` / `browser_fill` / `browser_select` / `browser_screenshot` / `browser_get_text` / `browser_wait` / `browser_execute` / `browser_close`
 
-### Agentforce ADLC (via companion skills)
-When [agentforce-adlc](https://github.com/almandsky/agentforce-adlc) is installed, your agent also gets:
+### Agentforce ADLC (installed by setup.sh)
 - `/adlc-author` — Generate `.agent` files from requirements
 - `/adlc-discover` — Check which Flow/Apex/Retriever targets exist in the org
 - `/adlc-scaffold` — Generate Flow XML and Apex stubs for missing targets
@@ -171,7 +169,7 @@ Once connected, ask your agent:
 
 - **Node.js 20+**
 - **Salesforce CLI** (`npm install -g @salesforce/cli`) — for SF + ADLC tools
-- **Python 3.9+** — for ADLC skills (optional)
+- **Python 3.9+** — for ADLC skills (setup.sh skips gracefully if missing)
 - **Playwright** is bundled — browser tools work out of the box
 
 ## License
