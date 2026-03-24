@@ -70,6 +70,18 @@ Clone and build, then add to `.cursor/mcp.json` in your project root:
 
 The server uses **stdio transport**. Point your agent at `node /path/to/buildify-skills/dist/index.js` with the two env vars below.
 
+### 3. Add ADLC skills (optional — for Agentforce development)
+
+If you're building Agentforce agents, install [agentforce-adlc](https://github.com/almandsky/agentforce-adlc) to give your agent the full Agent Development Life Cycle — author, discover, scaffold, deploy, test, and optimize `.agent` files directly from your coding agent.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/almandsky/agentforce-adlc/main/tools/install.sh | bash
+```
+
+This installs 8 skills (`/adlc-author`, `/adlc-discover`, `/adlc-scaffold`, `/adlc-deploy`, `/adlc-run`, `/adlc-test`, `/adlc-optimize`, `/adlc-safety`) that work alongside the Buildify MCP tools. Use `record_agentforce_build` to log builds back to the app.
+
+**Requires**: Python 3.9+, Salesforce CLI (`sf`) authenticated to your org.
+
 ### Environment variables
 
 | Variable | Required | Description |
@@ -122,6 +134,29 @@ Tokens expire after **24 hours**. Generate a new one from the CLI drawer when ne
 ### Browser Automation (Playwright)
 - `browser_open` / `browser_click` / `browser_fill` / `browser_select` / `browser_screenshot` / `browser_get_text` / `browser_wait` / `browser_execute` / `browser_close`
 
+### Agentforce ADLC (via companion skills)
+When [agentforce-adlc](https://github.com/almandsky/agentforce-adlc) is installed, your agent also gets:
+- `/adlc-author` — Generate `.agent` files from requirements
+- `/adlc-discover` — Check which Flow/Apex/Retriever targets exist in the org
+- `/adlc-scaffold` — Generate Flow XML and Apex stubs for missing targets
+- `/adlc-deploy` — Validate, publish, and activate agent bundles
+- `/adlc-run` — Execute individual actions against a live org
+- `/adlc-test` — Preview + batch test agents with safety probes
+- `/adlc-optimize` — Analyze STDM session traces and improve the agent
+- `/adlc-safety` — LLM-driven safety and responsible AI review
+
+## End-to-end workflow: Plan → Build → Deploy
+
+1. **Plan the demo** — Use Buildify to write notes, create a storyboard, build a script
+2. **Define the build** — Add to-do items and org details in Org Config
+3. **Author the agent** — `/adlc-author` generates an `.agent` file from your requirements
+4. **Check the org** — `/adlc-discover` finds what already exists
+5. **Scaffold missing pieces** — `/adlc-scaffold` generates Flow/Apex stubs
+6. **Deploy** — `sf_deploy` pushes prerequisites, `/adlc-deploy` publishes the agent
+7. **Log it** — `record_agentforce_build("MyAgent", "path/to/file", "deployed")` tracks in the app
+8. **Test** — `/adlc-test` runs smoke tests with safety probes
+9. **Optimize** — `/adlc-optimize` analyzes production sessions and improves the agent
+
 ## Try it
 
 Once connected, ask your agent:
@@ -130,12 +165,13 @@ Once connected, ask your agent:
 
 > "Turn my notes into a 5-beat storyboard."
 
-> "Add a to-do item: Set up login flow automation."
+> "Build an Agentforce service agent based on my demo requirements."
 
 ## Prerequisites
 
 - **Node.js 20+**
-- **Salesforce CLI** (`npm install -g @salesforce/cli`) — only if using SF tools
+- **Salesforce CLI** (`npm install -g @salesforce/cli`) — for SF + ADLC tools
+- **Python 3.9+** — for ADLC skills (optional)
 - **Playwright** is bundled — browser tools work out of the box
 
 ## License
