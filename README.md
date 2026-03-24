@@ -1,6 +1,10 @@
 # Buildify MCP Server
 
-Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. Your agent gets 41 tools to read, write, and navigate every tab — plus Agentforce ADLC skills for the full agent development lifecycle.
+Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. One setup command installs everything:
+
+- **54 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation
+- **8 ADLC skills** — full Agentforce agent development lifecycle
+- **33 Salesforce skills** — Apex, Flow, LWC, Data Cloud, testing, and more
 
 Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Codex**, **Cline**, and any MCP-compatible tool.
 
@@ -21,8 +25,9 @@ cd buildify-skills
 This single command:
 - Builds the MCP server (`dist/index.js`)
 - Installs [Agentforce ADLC](https://github.com/almandsky/agentforce-adlc) skills (8 skills for authoring, deploying, testing, and optimizing Agentforce agents)
+- Installs [sf-skills](https://github.com/Jaganpro/sf-skills) (33 Salesforce development skills — Apex, Flow, LWC, Data Cloud, OmniStudio, testing, and more)
 
-> ADLC requires Python 3.9+. If Python isn't available, setup still completes — only ADLC is skipped.
+> ADLC requires Python 3.9+, sf-skills requires npx. If either is unavailable, setup still completes — only that piece is skipped.
 
 ### 3. Connect your agent
 
@@ -143,6 +148,19 @@ Tokens expire after **24 hours**. Generate a new one from the CLI drawer when ne
 - `/adlc-optimize` — Analyze STDM session traces and improve the agent
 - `/adlc-safety` — LLM-driven safety and responsible AI review
 
+### Salesforce Development Skills (installed by setup.sh)
+33 knowledge skills from [sf-skills](https://github.com/Jaganpro/sf-skills) that teach your agent Salesforce best practices:
+- **Development** — `sf-apex`, `sf-flow`, `sf-lwc`, `sf-soql`
+- **Quality** — `sf-testing`, `sf-debug`
+- **Data Cloud** — 7 skills covering connect, prepare, harmonize, segment, activate, retrieve
+- **AI & Automation** — `sf-ai-agentscript`, `sf-ai-agentforce`, testing, observability, persona
+- **Industries** — 6 OmniStudio skills (FlexCards, OmniScripts, Integration Procedures, +more)
+- **Foundation** — `sf-metadata`, `sf-data`, `sf-docs`, `sf-permissions`
+- **Integration** — `sf-connected-apps`, `sf-integration`
+- **DevOps** — `sf-deploy`, `sf-diagram-mermaid`, `sf-diagram-nanobananapro`
+
+See [skills/SF_SKILLS.md](skills/SF_SKILLS.md) for the full reference.
+
 ## End-to-end workflow: Plan → Build → Deploy
 
 1. **Plan the demo** — Use Buildify to write notes, create a storyboard, build a script
@@ -167,10 +185,17 @@ Once connected, ask your agent:
 
 ## Prerequisites
 
-- **Node.js 20+**
+- **Node.js 20+** — for MCP server + sf-skills
 - **Salesforce CLI** (`npm install -g @salesforce/cli`) — for SF + ADLC tools
 - **Python 3.9+** — for ADLC skills (setup.sh skips gracefully if missing)
 - **Playwright** is bundled — browser tools work out of the box
+
+## Documentation
+
+- [skills/SKILL.md](skills/SKILL.md) — Complete tool reference and workflow examples
+- [skills/ADLC_SETUP.md](skills/ADLC_SETUP.md) — Agentforce ADLC integration
+- [skills/SF_SKILLS.md](skills/SF_SKILLS.md) — Salesforce development skills reference
+- [skills/SF_CLI_SETUP.md](skills/SF_CLI_SETUP.md) — Salesforce CLI authentication setup
 
 ## License
 
