@@ -2,7 +2,7 @@
 
 Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. One setup command installs everything:
 
-- **54 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation
+- **60 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation, voice synthesis, video composition
 - **8 ADLC skills** — full Agentforce agent development lifecycle
 - **33 Salesforce skills** — Apex, Flow, LWC, Data Cloud, testing, and more
 - **3 Data 360 scripts** — query Data Cloud with ANSI SQL via SF CLI
@@ -138,7 +138,19 @@ Tokens expire after **24 hours**. Generate a new one from the CLI drawer when ne
 - `sf_get_org_info` / `sf_query` / `sf_run_apex` / `sf_deploy` / `sf_retrieve` / `sf_list_orgs` / `sf_describe_object`
 
 ### Browser Automation (Playwright)
-- `browser_open` / `browser_click` / `browser_fill` / `browser_select` / `browser_screenshot` / `browser_get_text` / `browser_wait` / `browser_execute` / `browser_close`
+- `browser_open` / `browser_click` / `browser_fill` / `browser_select` / `browser_screenshot` / `browser_get_text` / `browser_wait` / `browser_execute` / `browser_close` / `browser_stop_recording`
+
+### Video Generation
+- `save_screen_recording` — Save a browser recording to screen captures or as the demo video
+
+### Voice Synthesis (ElevenLabs)
+- `clone_voice` — Clone a voice from a recording using ElevenLabs Instant Voice Clone
+- `generate_narration` — Generate per-segment narration audio with a cloned voice
+- `generate_full_narration` — Generate a single narration track from full script text
+
+### Video Composition (ffmpeg)
+- `compose_demo_video` — Merge screen captures with narration audio, add transitions (crossfade, slide, wipe), and render the final demo video
+- `preview_timeline` — Preview the video timeline (segment durations, transitions, total length) without rendering
 
 ### Agentforce ADLC (installed by setup.sh)
 - `/adlc-author` — Generate `.agent` files from requirements

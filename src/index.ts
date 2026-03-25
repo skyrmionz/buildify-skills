@@ -15,9 +15,12 @@ import { videoTools, handleVideo } from "./tools/video.js";
 import { contextTools, handleContext } from "./tools/context.js";
 import { salesforceTools, handleSalesforce } from "./tools/salesforce.js";
 import { browserTools, handleBrowser } from "./tools/browser.js";
+import { videoGenerationTools, handleVideoGeneration } from "./tools/video-generation.js";
+import { voiceSynthesisTools, handleVoiceSynthesis } from "./tools/voice-synthesis.js";
+import { videoComposeTools, handleVideoCompose } from "./tools/video-compose.js";
 
 const server = new Server(
-  { name: "buildify-mcp", version: "1.1.0" },
+  { name: "buildify-mcp", version: "1.2.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -31,6 +34,9 @@ const allTools = [
   ...contextTools,
   ...salesforceTools,
   ...browserTools,
+  ...videoGenerationTools,
+  ...voiceSynthesisTools,
+  ...videoComposeTools,
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -61,6 +67,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       result = await handleSalesforce(name, args as Record<string, unknown>);
     } else if (browserTools.some((t) => t.name === name)) {
       result = await handleBrowser(name, args as Record<string, unknown>);
+    } else if (videoGenerationTools.some((t) => t.name === name)) {
+      result = await handleVideoGeneration(name, args as Record<string, unknown>);
+    } else if (voiceSynthesisTools.some((t) => t.name === name)) {
+      result = await handleVoiceSynthesis(name, args as Record<string, unknown>);
+    } else if (videoComposeTools.some((t) => t.name === name)) {
+      result = await handleVideoCompose(name, args as Record<string, unknown>);
     } else {
       throw new Error(`Unknown tool: ${name}`);
     }

@@ -1,6 +1,6 @@
 {
   "name": "buildify-skills",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Buildify MCP server — connect any AI agent to your Buildify demo planning workspace",
   "type": "module",
   "main": "dist/index.js",
@@ -33,11 +33,14 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
+    "ffmpeg-static": "^5.3.0",
+    "fluent-ffmpeg": "^2.1.3",
     "playwright": "^1.58.2"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0"
+    "@types/fluent-ffmpeg": "^2.1.28",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
   },
   "engines": {
     "node": ">=20"

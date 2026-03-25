@@ -35,10 +35,22 @@ export const videoTools = [
           type: "string",
           description: "Base64 data URI or URL of the generated demo video",
         },
-        revisionNotes: {
+        voiceId: {
+          type: "string",
+          description: "ElevenLabs cloned voice ID",
+        },
+        narrationSegments: {
           type: "array",
-          items: { type: "string" },
-          description: "Array of revision note strings",
+          items: {
+            type: "object",
+            properties: {
+              index: { type: "number" },
+              text: { type: "string" },
+              audioDataUri: { type: "string" },
+              durationMs: { type: "number" },
+            },
+          },
+          description: "Array of narration segments with audio and timing",
         },
       },
     },
