@@ -8,7 +8,7 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 2. The token is set as `DEMO_TOOL_TOKEN` env var
 3. `APP_URL` points to `https://demo-building-app-f0300aa3e343.herokuapp.com`
 
-## Available Tools (41)
+## Available Tools (60)
 
 ### Navigation
 - `navigate_to_tab(tab)` — Navigate the user's screen to: `notes` | `storyboard` | `script` | `org-config` | `video`
@@ -30,7 +30,10 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 - `update_script_row(rowId, cells)` — Partial update a row's cells
 - `delete_script_row(rowId)` — Remove a row
 - `add_script_column(name)` — Add a column
+- `rename_script_column(columnId, name)` — Rename a column
 - `delete_script_column(columnId)` — Remove a column and its cell data
+- `reorder_script_rows(rowIds[])` — Reorder rows by ID array
+- `reorder_script_columns(columnIds[])` — Reorder columns by ID array
 
 ### Org Configuration
 - `get_org_config()` — Returns all items
@@ -42,14 +45,23 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 - `record_agentforce_build(agentName, agentFilePath?, status)` — Record a build result
 
 ### Video
-- `get_video_config()` — Read voice recordings, screen captures, demo video, revision notes
-- `update_video_config({ voiceRecording?, screenCaptures?, demoVideo?, revisionNotes? })` — Update video config
+- `get_video_config()` — Read voice recordings, screen captures, demo video, voice ID, narration segments
+- `update_video_config({ voiceRecording?, screenCaptures?, demoVideo?, voiceId?, narrationSegments? })` — Update video config
 
 ### Context & Freshness
 - `get_current_demo()` — Full demo state including all tabs. Always reads fresh from DB.
 - `get_tab_content(tab)` — Read one tab's content (lighter). Options: `notes`, `storyboard`, `script`, `org-config`, `video`
 - `update_demo_title(title)` — Rename the demo project
+- `update_demo_description(description)` — Update the demo description
+- `update_thumbnail(thumbnailUrl)` — Set the demo thumbnail image
 - `flush_and_read()` — **Use before making decisions.** Forces the user's browser to save pending edits, waits, then returns the freshest state.
+- `star_demo()` — Star/unstar the demo project
+- `archive_demo()` — Archive the demo project
+- `delete_demo()` — Delete the demo project
+- `publish_demo()` — Publish/unpublish the demo to the community
+- `search_community_demos(query)` — Search published community demos
+- `share_demo(email)` — Share the demo with another user
+- `unshare_demo(email)` — Remove sharing for a user
 
 ### Salesforce CLI
 - `sf_get_org_info(alias?)` — Get org details
@@ -61,7 +73,7 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 - `sf_describe_object(sobject, alias?)` — Describe SObject fields
 
 ### Browser Automation (Playwright)
-- `browser_open(url)` — Open a URL in a visible browser
+- `browser_open(url, recordVideo?)` — Open a URL in a visible browser (optionally record video)
 - `browser_click(selector)` — Click an element
 - `browser_fill(selector, value)` — Fill a text field
 - `browser_select(selector, value)` — Select from a dropdown
@@ -69,7 +81,20 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 - `browser_get_text(selector?)` — Get text content
 - `browser_wait(selector, timeout?)` — Wait for an element
 - `browser_execute(script)` — Run JavaScript in the page
+- `browser_stop_recording()` — Stop recording and return the video as a data URI
 - `browser_close()` — Close the browser
+
+### Video Generation
+- `save_screen_recording(videoDataUri, addToCaptures?)` — Save a browser recording to screen captures or directly as the demo video
+
+### Voice Synthesis (ElevenLabs)
+- `clone_voice(voiceName?)` — Clone a voice from the user's voice recording using ElevenLabs Instant Voice Clone
+- `generate_narration(segments[])` — Generate per-segment narration audio using the cloned voice. Returns audio data URIs with durations for sync.
+- `generate_full_narration(text)` — Generate a single narration track from full script text
+
+### Video Composition (ffmpeg)
+- `compose_demo_video(segments[])` — Merge screen captures with narration audio, apply transitions (crossfade, slide-left, wipe), and render the final MP4. Saves to demoVideo.
+- `preview_timeline(segments[])` — Preview the video timeline showing segment durations, transitions, and total length without rendering
 
 ## Best Practices
 
@@ -93,3 +118,12 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 2. Review what the user already has
 3. Use `update_*` tools to modify specific items (don't replace everything)
 4. Navigate to the relevant tab so the user sees the changes live
+
+### Generate a narrated demo video
+1. `browser_open(url, recordVideo: true)` — open the demo org and start recording
+2. Perform the demo steps using browser tools (click, fill, wait, etc.)
+3. `browser_stop_recording()` → `save_screen_recording(videoDataUri)` — save each segment
+4. `clone_voice()` — clone the user's voice from their recording
+5. `generate_narration(segments)` — generate narration for each script segment
+6. `preview_timeline(segments)` — verify timing before rendering
+7. `compose_demo_video(segments)` — render the final video with transitions
