@@ -96,6 +96,10 @@ This skill connects AI agents to the Buildify demo planning workspace via MCP (M
 - `compose_demo_video(segments[])` — Merge screen captures with narration audio, apply transitions (crossfade, slide-left, wipe), and render the final MP4. Saves to demoVideo.
 - `preview_timeline(segments[])` — Preview the video timeline showing segment durations, transitions, and total length without rendering
 
+### Versioning
+- `list_tab_versions(tab)` — List version history for a tab (notes, storyboard, script, org_config)
+- `restore_tab_version(versionId)` — Restore a previous version. Current state is auto-saved before restoring.
+
 ## Best Practices
 
 - **Always `flush_and_read()` first** before writing — this ensures you don't overwrite the user's unsaved edits

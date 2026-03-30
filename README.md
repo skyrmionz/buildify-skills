@@ -2,7 +2,7 @@
 
 Connect any AI coding agent to your [Buildify](https://demo-building-app-f0300aa3e343.herokuapp.com) demo workspace. One setup command installs everything:
 
-- **60 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation, voice synthesis, video composition
+- **62 MCP tools** — read/write all demo tabs, navigate UI, Salesforce CLI, browser automation, voice synthesis, video composition, tab versioning
 - **8 ADLC skills** — full Agentforce agent development lifecycle
 - **33 Salesforce skills** — Apex, Flow, LWC, Data Cloud, testing, and more
 - **3 Data 360 scripts** — query Data Cloud with ANSI SQL via SF CLI

@@ -18,6 +18,7 @@ import { browserTools, handleBrowser } from "./tools/browser.js";
 import { videoGenerationTools, handleVideoGeneration } from "./tools/video-generation.js";
 import { voiceSynthesisTools, handleVoiceSynthesis } from "./tools/voice-synthesis.js";
 import { videoComposeTools, handleVideoCompose } from "./tools/video-compose.js";
+import { versioningTools, handleVersioning } from "./tools/versioning.js";
 
 const server = new Server(
   { name: "buildify-mcp", version: "1.2.0" },
@@ -37,6 +38,7 @@ const allTools = [
   ...videoGenerationTools,
   ...voiceSynthesisTools,
   ...videoComposeTools,
+  ...versioningTools,
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -73,6 +75,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       result = await handleVoiceSynthesis(name, args as Record<string, unknown>);
     } else if (videoComposeTools.some((t) => t.name === name)) {
       result = await handleVideoCompose(name, args as Record<string, unknown>);
+    } else if (versioningTools.some((t) => t.name === name)) {
+      result = await handleVersioning(name, args as Record<string, unknown>);
     } else {
       throw new Error(`Unknown tool: ${name}`);
     }
